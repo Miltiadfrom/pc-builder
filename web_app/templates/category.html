@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category_name }} — Конструктор ПК{% endblock %}
+
+{% block content %}
+<section class="category-header">
+    <h1>{{ category_icon }} {{ category_name }}</h1>
+    <p>{{ category_description }}</p>
+</section>
+
+<section class="components-section">
+    <a href="{{ url_for('index') }}" class="back-button">← Назад к конструктору</a>
+    
+    <div class="components-grid">
+        {% for component in components %}
+        <div class="component-card">
+            <div class="component-image">
+                {{ category_icon }}
+            </div>
+            
+            <div class="component-content">
+                <h3 class="component-name">{{ component.name }}</h3>
+                
+                <ul class="component-specs">
+                    {% for spec in component.specs %}
+                    <li>{{ spec }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <div class="component-footer">
+                    <div class="component-price">
+                        {{ component.price }} ₽
+                    </div>
+                    <button class="btn-select" 
+                            data-id="{{ component.id }}" 
+                            data-category="{{ category_key }}"
+                            onclick="selectAndBuild('{{ category_key }}', {{ component.id }})">
+                        Выбрать
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+function selectAndBuild(categoryKey, componentId) {
+    // Перенаправляем на главную с предустановленным компонентом
+    window.location.href = `/?${categoryKey}=${componentId}`;
+}
+</script>
+{% endblock %}

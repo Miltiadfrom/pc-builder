@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Конструктор ПК{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖥️</text></svg>">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                PC<span>Builder</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Конструктор</a></li>
+                <li><a href="{{ url_for('categories_list') }}">Категории</a></li>
+                <li><a href="{{ url_for('about') }}">О проекте</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p> Конструктор ПК с проверкой совместимости.</p>
+    </footer>
+</body>
+</html>

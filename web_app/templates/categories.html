@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Категории — Конструктор ПК{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Каталог компонентов</h1>
+        <p>
+            Просматривайте все доступные компоненты по категориям. 
+            Более 200 реальных деталей для создания идеальной сборки.
+        </p>
+    </div>
+</section>
+
+<section class="categories-section">
+    <h2 class="section-title">Выберите категорию</h2>
+    
+    <div class="categories-grid">
+        {% for category in categories %}
+        <a href="{{ url_for('category', category_key=category.key) }}" class="category-card">
+            <span class="category-icon">{{ category.icon }}</span>
+            <h3>{{ category.name }}</h3>
+            <p>{{ category.description }}</p>
+            <span class="category-count">{{ category.count }} моделей</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

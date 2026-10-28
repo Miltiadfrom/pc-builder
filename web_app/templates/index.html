@@ -1,0 +1,711 @@
+{% extends "base.html" %}
+
+{% block title %}Конструктор ПК — Соберите ваш компьютер{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Соберите ваш компьютер прямо сейчас!</h1>
+        <p>
+            Пройдите несколько простых шагов и получите идеально совместимую конфигурацию ПК.
+            Мы подберем компоненты с учётом ваших предпочтений и бюджета.
+        </p>
+    </div>
+</section>
+
+<section class="builder-section">
+    <div class="builder-container">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <!-- Step Counter -->
+        <div class="step-counter">
+            Шаг <span id="currentStep">1</span> из <span id="totalSteps">8</span>
+        </div>
+        
+        <!-- Builder Content -->
+        <div id="builderContent">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Загрузка...</p>
+            </div>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="builder-nav">
+            <button id="prevBtn" class="btn-secondary" style="display: none;">← Назад</button>
+            <button id="nextBtn" class="btn-primary" disabled>Далее →</button>
+        </div>
+    </div>
+</section>
+
+<style>
+/* ============================================
+   Конструктор ПК
+   ============================================ */
+.builder-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+.builder-container {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    box-shadow: var(--shadow-md);
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-accent);
+    transition: width 0.3s ease;
+    width: 12.5%;
+}
+
+/* Step Counter */
+.step-counter {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+/* Builder Content */
+.builder-content {
+    min-height: 500px;
+    margin-bottom: 2rem;
+}
+
+.step-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.component-option {
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.component-option:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.component-option.selected {
+    border-color: var(--color-accent);
+    background: rgba(45, 95, 93, 0.05);
+}
+
+.component-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 30px;
+    height: 30px;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.component-option-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+}
+
+.component-option-specs {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.component-option-specs li {
+    padding: 0.375rem 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.component-option-specs li:last-child {
+    border-bottom: none;
+}
+
+.component-option-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-price);
+    margin-top: 1rem;
+}
+
+/* Skip Button */
+.skip-button {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 2rem;
+}
+
+.skip-button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* Navigation Buttons */
+.builder-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--color-accent);
+    color: white;
+    flex: 1;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* Loading */
+.loading {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Summary */
+.summary-section {
+    padding: 2rem;
+}
+
+.summary-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.summary-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-around;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.summary-stat {
+    text-align: center;
+    padding: 2rem;
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    flex: 1;
+    min-width: 200px;
+}
+
+.summary-stat-label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.summary-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-accent);
+}
+
+.summary-components {
+    margin-bottom: 3rem;
+}
+
+.summary-components h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.summary-component {
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.summary-component-name {
+    font-weight: 600;
+    flex: 1;
+}
+
+.summary-component-price {
+    font-weight: 700;
+    color: var(--color-price);
+    font-size: 1.125rem;
+}
+
+.contact-info {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.contact-info h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}
+
+.contact-info p {
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.contact-methods {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+.contact-method {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.contact-method-label {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contact-method-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.warning-box {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.warning-box h4 {
+    color: #856404;
+    margin-bottom: 1rem;
+}
+
+.warning-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.warning-box li {
+    padding: 0.5rem 0;
+    color: #856404;
+}
+</style>
+
+<script>
+class PCBuilder {
+    constructor() {
+        this.currentStep = 1;
+        this.totalSteps = 8;
+        this.selectedComponents = {};
+        this.stepData = null;
+        
+        this.init();
+    }
+    
+    init() {
+        // Загружаем предустановленные компоненты из URL
+        this.loadFromURL();
+        
+        // Определяем с какого шага начать
+        this.currentStep = this.getStartStep();
+        
+        this.loadStep(this.currentStep);
+        this.attachEventListeners();
+    }
+    
+    loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const componentTypes = ['cpu', 'motherboard', 'ram', 'gpu', 'storage', 'cooling', 'case', 'psu'];
+        
+        componentTypes.forEach(type => {
+            const value = params.get(type);
+            if (value) {
+                this.selectedComponents[type] = value;
+            }
+        });
+        
+        // Если есть предустановленные компоненты, очищаем URL
+        if (Object.keys(this.selectedComponents).length > 0) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+    
+    getStartStep() {
+        // Определяем первый непройденный шаг
+        const steps = ['cpu', 'motherboard', 'ram', 'gpu', 'storage', 'cooling', 'case', 'psu'];
+        
+        for (let i = 0; i < steps.length; i++) {
+            const componentType = steps[i];
+            
+            // Опциональные компоненты можно пропустить
+            const optionalTypes = ['gpu', 'storage', 'cooling', 'case'];
+            const isOptional = optionalTypes.includes(componentType);
+            
+            // Если компонент не выбран и он обязательный — это наш шаг
+            if (!this.selectedComponents[componentType] && !isOptional) {
+                return i + 1;
+            }
+            
+            // Если компонент не выбран, но опциональный — проверяем следующий
+            if (!this.selectedComponents[componentType] && isOptional) {
+                continue;
+            }
+        }
+        
+        // Все обязательные выбраны, начинаем с первого опционального
+        return 1;
+    }
+    
+    attachEventListeners() {
+        document.getElementById('prevBtn').addEventListener('click', () => this.prevStep());
+        document.getElementById('nextBtn').addEventListener('click', () => this.nextStep());
+    }
+    
+    async loadStep(step) {
+        this.showLoading();
+        
+        try {
+            const params = new URLSearchParams();
+            Object.keys(this.selectedComponents).forEach(key => {
+                if (this.selectedComponents[key]) {
+                    params.append(key, this.selectedComponents[key]);
+                }
+            });
+            
+            const response = await fetch(`/api/builder/step/${step}?${params}`);
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Ошибка: ' + data.error);
+                return;
+            }
+            
+            this.stepData = data;
+            this.renderStep(data);
+            this.updateProgress();
+            this.updateNavigation();
+        } catch (error) {
+            console.error('Ошибка загрузки шага:', error);
+            alert('Произошла ошибка при загрузке');
+        }
+    }
+    
+    renderStep(data) {
+        const container = document.getElementById('builderContent');
+        
+        let html = `<h2 class="step-title">${data.title}</h2>`;
+        
+        if (data.optional) {
+            html += `<button class="skip-button" onclick="builder.skipStep()">Пропустить этот шаг</button>`;
+        }
+        
+        html += `<div class="component-grid">`;
+        
+        data.components.forEach(component => {
+            const isSelected = this.selectedComponents[data.component_type] === component.id.toString();
+            html += `
+                <div class="component-option ${isSelected ? 'selected' : ''}" 
+                    data-type="${data.component_type}"
+                    data-id="${component.id}"
+                    onclick="builder.selectComponent('${data.component_type}', ${component.id})">
+                    <div class="component-option-name">${component.name}</div>
+                    <ul class="component-option-specs">
+                        ${component.specs.map(spec => `<li>${spec}</li>`).join('')}
+                    </ul>
+                    <div class="component-option-price">${component.price} ₽</div>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        
+        container.innerHTML = html;
+    }
+    
+    selectComponent(type, id) {
+        this.selectedComponents[type] = id.toString();
+        this.updateUI();
+    }
+    
+    skipStep() {
+        delete this.selectedComponents[this.stepData.component_type];
+        this.nextStep();
+    }
+    
+    updateUI() {
+        const type = this.stepData.component_type;
+        const selectedId = String(this.selectedComponents[type] || '');
+        
+        // Точное сравнение ID через data-атрибуты — без поиска по подстроке
+        document.querySelectorAll('.component-option').forEach(option => {
+            const isMatch = option.dataset.type === type && option.dataset.id === selectedId;
+            option.classList.toggle('selected', isMatch);
+        });
+        
+        // Кнопка "Далее": для опциональных шагов активна всегда
+        const nextBtn = document.getElementById('nextBtn');
+        if (this.stepData.optional) {
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.disabled = !selectedId;
+        }
+    }
+    
+    async nextStep() {
+        if (this.currentStep === this.totalSteps) {
+            await this.showSummary();
+        } else {
+            this.currentStep++;
+            await this.loadStep(this.currentStep);
+        }
+    }
+    
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.currentStep--;
+            this.loadStep(this.currentStep);
+        }
+    }
+    
+    updateProgress() {
+        const progress = (this.currentStep / this.totalSteps) * 100;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('currentStep').textContent = this.currentStep;
+    }
+    
+    updateNavigation() {
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        prevBtn.style.display = this.currentStep > 1 ? 'block' : 'none';
+        nextBtn.textContent = this.currentStep === this.totalSteps ? 'Показать результат' : 'Далее →';
+        
+        // Для опциональных шагов кнопка "Далее" активна даже без выбора
+        if (this.stepData && this.stepData.optional) {
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.disabled = !this.selectedComponents[this.stepData.component_type];
+        }
+    }
+    
+    showLoading() {
+        document.getElementById('builderContent').innerHTML = `
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Загрузка...</p>
+            </div>
+        `;
+    }
+    
+    async showSummary() {
+        this.showLoading();
+        
+        try {
+            const response = await fetch('/api/builder/summary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.selectedComponents)
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Ошибка: ' + data.error);
+                return;
+            }
+            
+            this.renderSummary(data);
+        } catch (error) {
+            console.error('Ошибка получения итога:', error);
+            alert('Произошла ошибка');
+        }
+    }
+    
+    renderSummary(data) {
+        const container = document.getElementById('builderContent');
+        
+        let html = `
+            <div class="summary-section">
+                <div class="summary-header">
+                    <h2>🎉 Ваша сборка готова!</h2>
+                    <p>Все компоненты идеально совместимы друг с другом</p>
+                </div>
+                
+                <div class="summary-total">
+                    <div class="summary-stat">
+                        <div class="summary-stat-label">Общая стоимость</div>
+                        <div class="summary-stat-value">${data.total_price} ₽</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-label">Энергопотребление</div>
+                        <div class="summary-stat-value">${data.total_tdp}W</div>
+                    </div>
+                </div>
+        `;
+        
+        if (data.warnings.length > 0) {
+            html += `
+                <div class="warning-box">
+                    <h4>⚠️ Предупреждения</h4>
+                    <ul>
+                        ${data.warnings.map(w => `<li>${w}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        html += `
+                <div class="summary-components">
+                    <h3>Выбранные компоненты</h3>
+                    ${data.components.map(component => `
+                        <div class="summary-component">
+                            <div class="summary-component-name">${component.name}</div>
+                            <div class="summary-component-price">${component.price} ₽</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="contact-info">
+                    <h3>Готовы заказать?</h3>
+                    <p>Свяжитесь с нами для оформления заказа и получения консультации</p>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="contact-method-label">Телефон</div>
+                            <div class="contact-method-value">${data.contact.phone}</div>
+                        </div>
+                        <div class="contact-method">
+                            <div class="contact-method-label">Email</div>
+                            <div class="contact-method-value">${data.contact.email}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+        document.querySelector('.builder-nav').style.display = 'none';
+        document.querySelector('.progress-bar').style.display = 'none';
+        document.querySelector('.step-counter').style.display = 'none';
+    }
+}
+
+const builder = new PCBuilder();
+</script>
+{% endblock %}

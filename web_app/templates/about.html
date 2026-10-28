@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}О проекте — Конструктор ПК{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>О проекте</h1>
+        <p>
+            PC Builder — профессиональный конструктор компьютеров с автоматической проверкой совместимости
+        </p>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="about-container">
+        <div class="about-content">
+            <h2>Что такое PC Builder?</h2>
+            <p>
+                PC Builder — это интеллектуальная система подбора компонентов для сборки персональных компьютеров. 
+                Мы помогаем пользователям создавать идеально совместимые конфигурации без необходимости 
+                разбираться в технических нюансах.
+            </p>
+            
+            <h2>Наши преимущества</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Умная фильтрация</h3>
+                    <p>
+                        На каждом шаге показываются только совместимые компоненты. 
+                        Невозможно выбрать несовместимые детали.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Полная база данных</h3>
+                    <p>
+                        Более 200 реальных компонентов: процессоры Intel 12-14 поколений, 
+                        AMD Ryzen 5000-9000, видеокарты NVIDIA RTX и AMD Radeon.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Автоматический расчёт</h3>
+                    <p>
+                        Система автоматически рассчитывает энергопотребление, 
+                        проверяет совместимость сокетов, форм-факторов и типов памяти.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Прозрачные цены</h3>
+                    <p>
+                        Актуальные цены на все компоненты. 
+                        Итоговая стоимость рассчитывается автоматически.
+                    </p>
+                </div>
+            </div>
+            
+            <h2>Как это работает?</h2>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Выберите процессор</h4>
+                        <p>Мы предлагаем три варианта: бюджетный, средний и премиальный</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Подберите совместимые компоненты</h4>
+                        <p>Система автоматически фильтрует подходящие детали</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Получите готовую конфигурацию</h4>
+                        <p>С полной информацией о стоимости, энергопотреблении и совместимости</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <h2>Готовы собрать свой ПК?</h2>
+                <p>Начните прямо сейчас и получите идеально совместимую конфигурацию</p>
+                <a href="{{ url_for('index') }}" class="btn-cta">Начать сборку</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.about-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.about-container {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    box-shadow: var(--shadow-md);
+}
+
+.about-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    margin-top: 2.5rem;
+    letter-spacing: -0.5px;
+}
+
+.about-content h2:first-child {
+    margin-top: 0;
+}
+
+.about-content > p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    background: var(--color-bg);
+    padding: 2rem;
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: var(--transition);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.feature-card p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.steps-list {
+    margin: 2rem 0;
+}
+
+.step-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.step-content p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.cta-section h2 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.btn-cta {
+    display: inline-block;
+    background: white;
+    color: var(--color-accent);
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.125rem;
+    transition: var(--transition);
+}
+
+.btn-cta:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+</style>
+{% endblock %}
