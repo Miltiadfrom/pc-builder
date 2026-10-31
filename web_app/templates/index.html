@@ -42,9 +42,32 @@
 </section>
 
 <style>
-/* ============================================
-   Конструктор ПК
-   ============================================ */
+.search-box {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.search-box input {
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    transition: var(--transition);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(45, 95, 93, 0.1);
+}
+
+.search-box input::placeholder {
+    color: var(--color-text-secondary);
+}
+
 .builder-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -470,6 +493,22 @@ class PCBuilder {
         return 1;
     }
     
+    filterComponents() {
+        const searchInput = document.getElementById('componentSearch');
+        const searchTerm = searchInput.value.toLowerCase();
+        const grid = document.getElementById('componentGrid');
+        const cards = grid.querySelectorAll('.component-option');
+        
+        cards.forEach(card => {
+            const name = card.dataset.name;
+            if (name.includes(searchTerm)) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
     attachEventListeners() {
         document.getElementById('prevBtn').addEventListener('click', () => this.prevStep());
         document.getElementById('nextBtn').addEventListener('click', () => this.nextStep());
@@ -509,11 +548,23 @@ class PCBuilder {
         
         let html = `<h2 class="step-title">${data.title}</h2>`;
         
+        // Поле поиска для больших списков
+        if (data.components.length > 10) {
+            html += `
+                <div class="search-box">
+                    <input type="text" 
+                        id="componentSearch" 
+                        placeholder="Поиск по названию..." 
+                        onkeyup="builder.filterComponents()">
+                </div>
+            `;
+        }
+        
         if (data.optional) {
             html += `<button class="skip-button" onclick="builder.skipStep()">Пропустить этот шаг</button>`;
         }
         
-        html += `<div class="component-grid">`;
+        html += `<div class="component-grid" id="componentGrid">`;
         
         data.components.forEach(component => {
             const isSelected = this.selectedComponents[data.component_type] === component.id.toString();
@@ -521,6 +572,7 @@ class PCBuilder {
                 <div class="component-option ${isSelected ? 'selected' : ''}" 
                     data-type="${data.component_type}"
                     data-id="${component.id}"
+                    data-name="${component.name.toLowerCase()}"
                     onclick="builder.selectComponent('${data.component_type}', ${component.id})">
                     <div class="component-option-name">${component.name}</div>
                     <ul class="component-option-specs">

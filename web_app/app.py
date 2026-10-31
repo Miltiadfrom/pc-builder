@@ -286,7 +286,7 @@ def get_builder_step(step):
     
     # Определяем какой компонент нужен на этом шаге
     step_config = {
-        1: ('cpu', 'Процессор', get_recommended_cpus),
+        1: ('cpu', 'Процессор', db.get_all_cpu),
         2: ('motherboard', 'Материнская плата', builder.get_compatible_components),
         3: ('ram', 'Оперативная память', builder.get_compatible_components),
         4: ('gpu', 'Видеокарта', builder.get_compatible_components),
